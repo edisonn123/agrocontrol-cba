@@ -25,6 +25,16 @@ def submenu1():
     print("0. Salir")
     print(" ")
 
+def submenuBuscar():
+    print("============Opcion de Busqueda===========")
+    print(" ")
+    print("1. Listar todos los productos")
+    print("2. Listar productos ACTIVOS")
+    print("3. Buscar por codigo")
+    print("4. Buscar por parte del nombre")
+    print("0. Salir")
+    print(" ")
+
 def cargar_productos():
     try:
         with open("data/productos.json", "r") as archivo:
@@ -115,6 +125,9 @@ def registrar_producto():
         return
 
     stock_minimo = int(input("Ingrese el stock minimo para vender: "))
+    if stock_minimo <= 0:
+        print("El stock minimo debe ser mayor que 0")
+        return
 
     producto = {
         "codigo":codigo,
@@ -136,6 +149,58 @@ def consultar_productos():
     print("-" * 77)
     for producto in productos:
         print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  {producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+
+def actualizar_producto():
+    codigo = input("Ingrese el codigo del producto que va a actualizar: ").strip()
+
+    encontrado = False
+    for producto in productos:
+        if producto['codigo'] == codigo:
+            encontrado = True
+            resultado = producto
+            break
+
+    if encontrado == False:
+        print("Producto no encontrado")
+        return
+
+    print("Presione enter para mantener el campo como esta")
+    nuevo_nombre = input(f"Nombre [{resultado['nombre']}]: ").strip()
+    if nuevo_nombre != "":
+        resultado["nombre"] = nuevo_nombre
+
+    nueva_categoria = input(f"Categoria [{resultado['categoria']}]: ").strip()
+    if nueva_categoria != "":
+        resultado["categoria"] = nueva_categoria
+
+    nueva_unidad = input(f"Unidad [{resultado['unidad']}]: ").strip()
+    if nueva_unidad != "":
+        resultado["unidad"] = nueva_unidad
+
+    nuevo_precio = input(f"Precio [{resultado['precio']}]: ").strip()
+    if nuevo_precio != "":
+        try:
+            precio_numero = int(nuevo_precio)
+            if precio_numero <= 0:
+                print("El precio debe ser mayor que 0, no se actualizo")
+            else:
+                resultado["precio"] = precio_numero
+        except ValueError:
+            print("Precio Invalido, No se actualizo")
+
+    nuevo_stock_minimo = input(f"Stock_minimo [{resultado['stock_minimo']}]: ").strip()
+    if nuevo_stock_minimo != " ":
+        try:
+            stock_numero = int(nuevo_stock_minimo)
+            if stock_numero <= 0:
+                print("El stock minimo tiene que ser mayor que 0, No se actualizo")
+            else:
+                resultado["stock_minimo"] = stock_numero
+        except ValueError:
+            print("Numero invalido, No se actualizo")
+
+    print("Producto actualizado correctamente")
+
 
 
 def main():
@@ -162,13 +227,25 @@ def main():
                             registrar_producto()
                             guardar_productos()
                         case 2:
-                            consultar_productos()
+                            control2 = True
+                            while (control2):
+                                submenuBuscar()
+                                try:
+                                    opc2 = int(input("Seleccione una opcion: "))
+                                except ValueError:
+                                    print("Ingrese una opcion valida")
+                                    continue
+                                match(opc2):
+                                    case 1:
+                                        consultar_productos()
+                        case 3:
+                            actualizar_producto()
+                            guardar_productos()
                         case 0:
                             break 
             case 2:
                 registrar_lote()
-
-                    
+       
             case 0:
                 print("Ha salido del sistema correctamente")
                 break
