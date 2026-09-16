@@ -14,9 +14,19 @@ def menu():
     print("0. Salir")
     print(" ")
 
+def submenu1():
+    print("============Gestion Productos==========")
+    print(" ")
+    print("1. Registrar Producto")
+    print("2. Consultar Productos")
+    print("3. Actualizar Producto")
+    print("4. Desactivar Producto")
+    print("5. Salir")
+    print(" ")
+
 def cargar_productos():
     try:
-        with open("agrocontrol_cba/data/productos.json", "r") as archivo:
+        with open("data/productos.json", "r") as archivo:
             productos = json.load(archivo)
             return productos
     except FileNotFoundError:
@@ -24,7 +34,7 @@ def cargar_productos():
 
 def cargar_lotes():
     try:
-        with open("agrocontrol_cba/data/lotes.json", "r") as archivo:
+        with open("data/lotes.json", "r") as archivo:
             lotes = json.load(archivo)
             return lotes
     except FileNotFoundError:
@@ -32,7 +42,7 @@ def cargar_lotes():
 
 def cargar_movimientos():
     try:
-        with open("agrocontrol_cba/data/movimientos.json", "r") as archivo:
+        with open("data/movimientos.json", "r") as archivo:
             movimientos = json.load(archivo)
             return movimientos
     except FileNotFoundError:
@@ -40,32 +50,82 @@ def cargar_movimientos():
 
 def cargar_ventas():
     try:
-        with open("agrocontrol_cba/data/ventas.json", "r") as archivo:
+        with open("data/ventas.json", "r") as archivo:
             ventas = json.load(archivo)
             return ventas
     except FileNotFoundError:
         return []
 
 def guardar_productos():
-    with open("agrocontrol_cba/data/productos.json", "w") as archivo:
+    with open("data/productos.json", "w") as archivo:
         json.dump (productos, archivo, indent=4)
 
 def guardar_lotes():
-    with open("agrocontrol_cba/data/lotes.json", "w") as archivo:
+    with open("data/lotes.json", "w") as archivo:
         json.dump (lotes, archivo, indent=4)
 
 def guardar_movimientos():
-    with open("agrocontrol_cba/data/movimientos.json", "w") as archivo:
+    with open("data/movimientos.json", "w") as archivo:
         json.dump (movimientos, archivo, indent=4)
 
 def guardar_ventas():
-    with open("agrocontrol_cba/data/ventas.json", "w") as archivo:
+    with open("data/ventas.json", "w") as archivo:
         json.dump (ventas, archivo, indent=4)
 
 productos = cargar_productos()
 lotes = cargar_lotes()
 movimientos = cargar_movimientos()
 ventas = cargar_ventas()
+
+def registrar_producto():
+    codigo = input("Ingrese el codigo del producto: ").strip().upper()
+
+    if codigo=="":
+        print("El codigo no puede estar vacio")
+    if " " in codigo:
+        print("El codigo no puede tener espacios")
+
+    codigo_repetido = False
+    for producto in productos:
+        if producto['codigo'] == codigo:
+            codigo_repetido = True
+            break
+    
+    if codigo_repetido:
+        print("El codigo ingresado se encuentra ya asignado")
+        return
+
+    nombre = input("Ingrese el nombre: ").strip()
+    categoria = input("Ingrese la categoria: ").strip()
+
+    if nombre == "" or categoria == "":
+        print("El nombre y la categoria no pueden quedar vacios") 
+        return
+
+    unidad = input("Ingresa la unidad de medida en la que se vende: ").strip().lower()
+
+    precio = int(input("Ingrese el precio del producto: "))
+    try:
+        if precio <= 0:
+            print("El precio debe ser mayor que cero")
+            return
+    except ValueError:
+        print("El precio debe ser un numero entero")
+        return
+
+    stock_minimo = int(input("Ingrese el stock minimo para vender: "))
+
+    producto = {
+        "codigo":codigo,
+        "nombre":nombre,
+        "categoria":categoria,
+        "unidad":unidad,
+        "precio":precio,
+        "stock_minimo":stock_minimo,
+        "activo":True
+    }
+    productos.append(producto)
+    print(f"Producto {codigo} registrado correctamente")
 
 
 def main():
@@ -78,12 +138,25 @@ def main():
             print("Ingrese una opcion valida")
             continue
         match(opc):
-            case 8:
-                guardar_productos()
-                guardar_ventas()
-                guardar_lotes()
-                guardar_movimientos()
-                print("Los datos se han guardado con exito")
+            case 1:
+                control1=True
+                while (control1):
+                    submenu1()
+                    try:
+                        opc1 = int(input("Seleccione una opcion: "))
+                    except ValueError:
+                        print("Ingrese una opcion valida")
+                        continue
+                    match(opc1):
+                        case 1:
+                            registrar_producto()
+                            guardar_productos()
+                        case 0:
+                            break 
+
+                    
             case 0:
                 print("Ha salido del sistema correctamente")
                 break
+
+main()
