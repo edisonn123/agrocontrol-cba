@@ -66,3 +66,24 @@ productos = cargar_productos()
 lotes = cargar_lotes()
 movimientos = cargar_movimientos()
 ventas = cargar_ventas()
+
+
+def main():
+    control = True
+    while(control):
+        menu()
+        try:
+            opc = int(input("Seleccione una opcion: "))
+        except ValueError:
+            print("Ingrese una opcion valida")
+            continue
+        match(opc):
+            case 8:
+                guardar_productos()
+                guardar_ventas()
+                guardar_lotes()
+                guardar_movimientos()
+                print("Los datos se han guardado con exito")
+            case 0:
+                print("Ha salido del sistema correctamente")
+                break
