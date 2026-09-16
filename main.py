@@ -45,3 +45,24 @@ def cargar_ventas():
             return ventas
     except FileNotFoundError:
         return []
+
+def guardar_productos():
+    with open("agrocontrol_cba/data/productos.json", "w") as archivo:
+        json.dump (productos, archivo, indent=4)
+
+def guardar_lotes():
+    with open("agrocontrol_cba/data/lotes.json", "w") as archivo:
+        json.dump (lotes, archivo, indent=4)
+
+def guardar_movimientos():
+    with open("agrocontrol_cba/data/movimientos.json", "w") as archivo:
+        json.dump (movimientos, archivo, indent=4)
+
+def guardar_ventas():
+    with open("agrocontrol_cba/data/ventas.json", "w") as archivo:
+        json.dump (ventas, archivo, indent=4)
+
+productos = cargar_productos()
+lotes = cargar_lotes()
+movimientos = cargar_movimientos()
+ventas = cargar_ventas()
