@@ -145,10 +145,28 @@ def consultar_productos():
     if not productos:
         print("No existen productos registrados")
 
-    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} | ${"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
+    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} |  {"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
     print("-" * 77)
     for producto in productos:
-        print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  {producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+        print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  ${producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+
+def consultar_productos_activos():
+    if not productos:
+        print("No existen productos registrados")
+
+    encontrados = False
+    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} |  {"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
+    print("-" * 77)
+    for producto in productos:
+        if producto['activo'] == True:
+            encontrados = True
+            print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  ${producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+    if encontrados == False:
+        print("No hay productos activos")
+
+
+
+    
 
 def actualizar_producto():
     codigo = input("Ingrese el codigo del producto que va a actualizar: ").strip()
@@ -238,6 +256,10 @@ def main():
                                 match(opc2):
                                     case 1:
                                         consultar_productos()
+                                    case 2:
+                                        consultar_productos_activos()
+                                    case 0:
+                                        break
                         case 3:
                             actualizar_producto()
                             guardar_productos()
