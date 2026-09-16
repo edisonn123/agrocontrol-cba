@@ -1,4 +1,5 @@
 import json
+import datetime
 
 def menu():
     print("===========AGRO CONTROL CBA=============")
@@ -20,8 +21,8 @@ def submenu1():
     print("1. Registrar Producto")
     print("2. Consultar Productos")
     print("3. Actualizar Producto")
-    print("4. Desactivar Producto")
-    print("5. Salir")
+    print("4. Gestionar estado de Producto")
+    print("0. Salir")
     print(" ")
 
 def cargar_productos():
@@ -92,7 +93,7 @@ def registrar_producto():
             break
     
     if codigo_repetido:
-        print("El codigo ingresado se encuentra ya asignado")
+        print("El codigo ingresado se encuentra ya asignado a un producto")
         return
 
     nombre = input("Ingrese el nombre: ").strip()
@@ -127,6 +128,15 @@ def registrar_producto():
     productos.append(producto)
     print(f"Producto {codigo} registrado correctamente")
 
+def consultar_productos():
+    if not productos:
+        print("No existen productos registrados")
+
+    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} | ${"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
+    print("-" * 77)
+    for producto in productos:
+        print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  {producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+
 
 def main():
     control = True
@@ -151,8 +161,12 @@ def main():
                         case 1:
                             registrar_producto()
                             guardar_productos()
+                        case 2:
+                            consultar_productos()
                         case 0:
                             break 
+            case 2:
+                registrar_lote()
 
                     
             case 0:
