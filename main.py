@@ -162,23 +162,28 @@ def registrar_producto():
 def consultar_productos():
     if not productos:
         print("No existen productos registrados")
-
-    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} |  {"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
+    print(" ")
+    print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
     print("-" * 77)
     for producto in productos:
-        print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  ${producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+        print(f"| {producto['codigo']:<12} | {producto['nombre']:<12} | {producto['categoria']:<12} | {producto['unidad']:<12} | ${producto['precio']:<12} | {producto['stock_minimo']:<12} | {producto['activo']:<12} |")
+        print(" ")
 
 def consultar_productos_activos():
     if not productos:
         print("No existen productos registrados")
 
     encontrados = False
-    print(f"| {"Codigo":<10} | {"Nombre":<10} | {"Categoria":<10} | {"Unidad":<10} |  {"Precio":<10} | {"Min_stock":<10} | {"Activo":<10} |")
-    print("-" * 77)
     for producto in productos:
         if producto['activo'] == True:
-            encontrados = True
-            print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  ${producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
+            if not encontrados:
+                print(" ")
+                print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
+                print("-" * 77)
+                encontrados = True
+
+            print(f"| {producto['codigo']:<12} | {producto['nombre']:<12} | {producto['categoria']:<12} | {producto['unidad']:<12} | ${producto['precio']:<12} | {producto['stock_minimo']:<12} | {producto['activo']:<12} |")
+            print(" ")
     if encontrados == False:
         print("No hay productos activos")
 
@@ -186,11 +191,25 @@ def consultar_productos_codigo():
     if not productos:
         print("No existen productos registrados")
 
-           
+    codigo = input("Ingrese el codigo del producto a buscar: ").strip()
+
+    encontrados = False
+    for producto in productos:
+        if producto['codigo'] == codigo:
+            if not encontrados:
+                print(" ")
+                print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
+                print("-" * 77)
+                encontrados = True
+            print(f"| {producto['codigo']:<12} | {producto['nombre']:<12} | {producto['categoria']:<12} | {producto['unidad']:<12} | ${producto['precio']:<12} | {producto['stock_minimo']:<12} | {producto['activo']:<12} |")
+            print(" ")
+    if encontrados == False:
+        print("No existen productos con ese codigo")
 
 
 
-    
+
+        
 
 def actualizar_producto():
     codigo = input("Ingrese el codigo del producto que va a actualizar: ").strip()
@@ -282,6 +301,8 @@ def main():
                                         consultar_productos()
                                     case 2:
                                         consultar_productos_activos()
+                                    case 3:
+                                        consultar_productos_codigo()
                                     case 0:
                                         break
                         case 3:
