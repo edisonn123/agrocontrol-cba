@@ -290,6 +290,40 @@ def actualizar_producto():
     print("Producto actualizado correctamente")
     print(" ")
 
+def gestionar_estado_producto():
+    if not productos:
+        print("No existen productos registrados")
+        return
+    codigo = input("Ingrese el codigo del producto que desea gestionar: ")
+    encontrados = False
+    for producto in productos:
+        if producto["codigo"] == codigo:
+            encontrados = True
+            print(f"Producto {producto['nombre']} en estado: {producto['activo']}")
+            opc = input("Desea cambiar el estado: (si/no): ").strip().lower()
+            if (opc == "si") or (opc == "s"):
+                if producto['activo'] == True:
+                    producto['activo'] = False
+                    print(" ")
+                    print(f"Estado de {producto['nombre']} cambiado [{producto['activo']}] con exito")
+                    print(" ")
+                elif producto['activo'] == False:
+                    producto['activo'] = True
+                    print(" ")
+                    print(f"Estado de {producto['nombre']} cambiado a [{producto['activo']}] con exito")
+                    print(" ")
+            elif (opc == "no") or (opc == "n"):
+                print(" ")
+                print("Proceso de gestion cancelado con exito")
+                print(" ")
+                return
+            else:
+                print("Ingrese una opcion valida")
+                return
+    if encontrados == False:
+        print("No existen productos con ese codigo")
+    
+
 
 
 def main():
@@ -337,6 +371,9 @@ def main():
                                         break
                         case 3:
                             actualizar_producto()
+                            guardar_productos()
+                        case 4:
+                            gestionar_estado_producto()
                             guardar_productos()
                         case 0:
                             break 
