@@ -335,7 +335,7 @@ def gestionar_estado_producto():
         print("No existen productos con ese codigo")
 
 def registrar_lote():
-    codigo = input("Ingrese el id del lote: ").strip()
+    codigo = input("Ingrese el id del lote: ").strip().upper()
     if codigo=="":
         print("El codigo no puede estar vacio")
         return
@@ -397,6 +397,21 @@ def registrar_lote():
     print(f"El producto {codigo_producto} se asigno correctamente al lote {codigo}")
     print("")
 
+def sembrar_lote():
+    codigo = input("Ingrese el codigo del lote que desea sembrar: ").strip()
+
+    encontrado = False
+    for lote in lotes:
+        if lote['codigo'] == codigo:
+            encontrado = True
+            fecha_siembra = input("Ingrese la fecha de siembra(DD/MM/AAAA): ")
+            lote['fecha_siembra'] = fecha_siembra
+            print("")
+            print(f"El lote {lote['codigo']} se sembro correctamente en la fecha {lote['fecha_siembra']}")
+            print("")
+    if encontrado == False:
+        print("No se encontro el lote con ese codigo")
+        
 
 
 
@@ -462,6 +477,9 @@ def main():
                 match(opc3):
                     case 1:
                         registrar_lote()
+                        guardar_lotes()
+                    case 2:
+                        sembrar_lote()
                         guardar_lotes()
                     case 0:
                         break
