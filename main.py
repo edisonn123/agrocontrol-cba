@@ -108,8 +108,8 @@ def registrar_producto():
         print("El codigo ingresado se encuentra ya asignado a un producto")
         return
 
-    nombre = input("Ingrese el nombre: ").strip()
-    categoria = input("Ingrese la categoria: ").strip()
+    nombre = input("Ingrese el nombre: ").strip().lower()
+    categoria = input("Ingrese la categoria: ").strip().lower()
 
     if nombre == "" or categoria == "":
         print("El nombre y la categoria no pueden quedar vacios") 
@@ -192,6 +192,9 @@ def consultar_productos_codigo():
         print("No existen productos registrados")
 
     codigo = input("Ingrese el codigo del producto a buscar: ").strip()
+    if codigo == "":
+        print("Ingrese un codigo valido")
+        return
 
     encontrados = False
     for producto in productos:
@@ -206,7 +209,27 @@ def consultar_productos_codigo():
     if encontrados == False:
         print("No existen productos con ese codigo")
 
+def consultar_productos_nombre():
+    if not productos:
+        print("No existen productos registrados")
 
+    nombre = input("Ingrese el nombre o parte de el, del producto: ").strip().lower()
+    if nombre == "":
+        print("Ingrese un nombre valido")
+        return
+
+    encontrados = False
+    for producto in productos:
+        if nombre in producto['nombre']:
+            if not encontrados:
+                print(" ")
+                print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
+                print("-" * 77)
+                encontrados = True
+            print(f"| {producto['codigo']:<12} | {producto['nombre']:<12} | {producto['categoria']:<12} | {producto['unidad']:<12} | ${producto['precio']:<12} | {producto['stock_minimo']:<12} | {producto['activo']:<12} |")
+            print(" ")
+    if encontrados == False:
+        print("No existen productos con ese nombre")
 
 
         
@@ -222,10 +245,14 @@ def actualizar_producto():
             break
 
     if encontrado == False:
+        print(" ")
         print("Producto no encontrado")
+        print(" ")
         return
+    print("================================================")
+    print("Presione ENTER para mantener el campo como esta")
+    print("================================================")
 
-    print("Presione enter para mantener el campo como esta")
     nuevo_nombre = input(f"Nombre [{resultado['nombre']}]: ").strip()
     if nuevo_nombre != "":
         resultado["nombre"] = nuevo_nombre
@@ -250,7 +277,7 @@ def actualizar_producto():
             print("Precio Invalido, No se actualizo")
 
     nuevo_stock_minimo = input(f"Stock_minimo [{resultado['stock_minimo']}]: ").strip()
-    if nuevo_stock_minimo != " ":
+    if nuevo_stock_minimo != "":
         try:
             stock_numero = int(nuevo_stock_minimo)
             if stock_numero <= 0:
@@ -259,8 +286,9 @@ def actualizar_producto():
                 resultado["stock_minimo"] = stock_numero
         except ValueError:
             print("Numero invalido, No se actualizo")
-
+    print(" ")
     print("Producto actualizado correctamente")
+    print(" ")
 
 
 
@@ -303,6 +331,8 @@ def main():
                                         consultar_productos_activos()
                                     case 3:
                                         consultar_productos_codigo()
+                                    case 4:
+                                        consultar_productos_nombre()
                                     case 0:
                                         break
                         case 3:
