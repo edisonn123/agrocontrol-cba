@@ -35,6 +35,17 @@ def submenuBuscar():
     print("0. Salir")
     print(" ")
 
+def submenuLote():
+    print("============Gestion de Lotes==============")
+    print(" ")
+    print("1. Registrar Lote")
+    print("2. Sembrar Lote")
+    print("3. Cosechar Lote")
+    print("4. Desactivar Lote")
+    print("5. Consultar Lotes")
+    print("0. Salir")
+    print(" ")
+
 def cargar_productos():
     try:
         with open("data/productos.json", "r") as archivo:
@@ -322,7 +333,71 @@ def gestionar_estado_producto():
                 return
     if encontrados == False:
         print("No existen productos con ese codigo")
+
+def registrar_lote():
+    codigo = input("Ingrese el id del lote: ").strip()
+    if codigo=="":
+        print("El codigo no puede estar vacio")
+        return
+    if " " in codigo:
+        print("El codigo no puede tener espacios")
+        return
+
+    codigo_repetido = False
+    for lote in lotes:
+        if lote['codigo'] == codigo:
+            codigo_repetido = True
+            break
+
+    if codigo_repetido == True:
+        print("El codigo ingresado se encuentra ya esta registrado")
+        return
+    if not productos:
+        print("No existen productos en el inventario para asignar")
+        return
     
+    codigo_producto = input("Ingrese el codigo del producto que se asignará al lote: ").strip()
+    if codigo_producto == "":
+        print("Ingrese un codigo valido")
+        return
+    encontrado = False
+    for producto in productos:
+        if codigo_producto == producto['codigo']:
+            encontrado = True
+            for lote in lotes:
+                if codigo_producto == lote['codigo_producto']:
+                    print("El producto ya esta asignado a un lote")
+                    return
+                elif producto['activo'] == False:
+                    print("El producto esta inactivo, no se puede asignar")
+                    return
+    if encontrado == False:
+        print("No existe un producto con ese codigo") 
+        return
+    try:    
+        area_texto = input("Ingrese el area en m2: ")
+        area = float(area_texto)
+        if area <=0:
+            print("El area debe ser mayor que 0")
+            return
+    except ValueError:
+        print("El area debe ser un numero")
+        return
+    
+    lote = {
+        'codigo':codigo,
+        'codigo_producto':codigo_producto,
+        'fecha_siembra':"",
+        'area_m2':area,
+        'cantidad_producida':0,
+        'estado':""
+    }
+    lotes.append(lote)
+    print("")
+    print(f"El producto {codigo_producto} se asigno correctamente al lote {codigo}")
+    print("")
+
+
 
 
 
@@ -378,7 +453,18 @@ def main():
                         case 0:
                             break 
             case 2:
-                registrar_lote()
+                submenuLote()
+                try:
+                    opc3 = int(input("Seleccione una opcion: "))
+                except ValueError:
+                    print("Ingrese una opcion valida")
+                    continue
+                match(opc3):
+                    case 1:
+                        registrar_lote()
+                        guardar_lotes()
+                    case 0:
+                        break
        
             case 0:
                 print("Ha salido del sistema correctamente")
