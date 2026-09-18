@@ -93,8 +93,10 @@ def registrar_producto():
 
     if codigo=="":
         print("El codigo no puede estar vacio")
+        return
     if " " in codigo:
         print("El codigo no puede tener espacios")
+        return
 
     codigo_repetido = False
     for producto in productos:
@@ -114,19 +116,34 @@ def registrar_producto():
         return
 
     unidad = input("Ingresa la unidad de medida en la que se vende: ").strip().lower()
+    if unidad == "":
+        print("La unidad no puede quedar vacia")
+        return
 
-    precio = int(input("Ingrese el precio del producto: "))
+    precio = input("Ingrese el precio del producto: ")
+    if precio == "":
+        print("El precio no puede quedar vacio")
+        return
     try:
-        if precio <= 0:
+        precio_numero = int(precio)
+        if precio_numero <= 0:
             print("El precio debe ser mayor que cero")
             return
     except ValueError:
         print("El precio debe ser un numero entero")
         return
 
-    stock_minimo = int(input("Ingrese el stock minimo para vender: "))
-    if stock_minimo <= 0:
-        print("El stock minimo debe ser mayor que 0")
+    stock_minimo = input("Ingrese el stock minimo para vender: ").strip()
+    if stock_minimo == "":
+        print("El stock no puede quedar vacio")
+        return
+    try:
+        stock = int(stock_minimo)
+        if stock <= 0:
+            print("El stock minimo debe ser mayor que 0")
+            return
+    except ValueError:
+        print("El stock debe ser un numero entero")
         return
 
     producto = {
@@ -136,7 +153,8 @@ def registrar_producto():
         "unidad":unidad,
         "precio":precio,
         "stock_minimo":stock_minimo,
-        "activo":True
+        "activo":True,
+        "stock_actual":0
     }
     productos.append(producto)
     print(f"Producto {codigo} registrado correctamente")
@@ -163,6 +181,12 @@ def consultar_productos_activos():
             print(f"| {producto['codigo']:<10} | {producto['nombre']:<10} | {producto['categoria']:<10} | {producto['unidad']:<10} |  ${producto['precio']:<10} | {producto['stock_minimo']:<10} | {producto['activo']:<10} |")
     if encontrados == False:
         print("No hay productos activos")
+
+def consultar_productos_codigo():
+    if not productos:
+        print("No existen productos registrados")
+
+           
 
 
 
