@@ -804,6 +804,25 @@ def mostrar_alertas():
         print("No hay productos en estado de alerta")
         print(" ")
 
+def reporte_inventario():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    print(" ")
+    print(f"| {'Codigo':<10} | {'Nombre':<15} | {'Stock':<8} | {'Precio':<10} | {'Valor total':<12} |")
+    print("-" * 65)
+    valor_total_inventario = 0
+    for producto in productos:
+        if producto['activo'] == True:
+            stock_actual = calcular_stock(producto['codigo'])
+            valor = stock_actual * producto['precio']
+            valor_total_inventario = valor_total_inventario + valor
+            print(f"| {producto['codigo']:<10} | {producto['nombre']:<15} | {stock_actual:<8} | ${producto['precio']:<9} | ${valor:<11} |")
+    print("-" * 65)
+    print(f"Valor total del inventario (a precio de venta): ${valor_total_inventario}")
+    print(" ")
+
 
 def main():
     control = True
