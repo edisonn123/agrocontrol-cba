@@ -174,7 +174,6 @@ def registrar_producto():
         "precio":precio_numero,
         "stock_minimo":stock,
         "activo":True,
-        "stock_actual":0
     }
     productos.append(producto)
     print(f"Producto {codigo} registrado correctamente")
@@ -506,6 +505,100 @@ def calcular_stock(codigo_producto):
                 stock = stock - movimiento['cantidad']
     return stock
 
+def generar_id_movimiento():
+    numero = len(movimientos) + 1
+    return f"M{numero:04d}"
+
+def registrar_entrada_manual():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    codigo = input("Ingrese el codigo del producto: ").strip().upper()
+    encontrado = False
+    for producto in productos:
+        if producto['codigo'] == codigo:
+            encontrado = True
+            if producto['activo'] == False:
+                print("El producto esta inactivo, no se puede registrar entrada")
+                return
+    if encontrado == False:
+        print("No existe un producto con ese codigo")
+        return
+    try:
+        cantidad = int(input("Ingrese la cantidad de entrada: "))
+        if cantidad <=0:
+            print("La cantidad debe ser mayor que 0")
+            return
+    except ValueError:
+        print("La cantidad debe ser un numero entero")
+        return
+
+    motivo = input("Ingrese el motivo de la entrada: ").strip()
+    if motivo == "":
+        print("El motivo es obligatorio")
+        return
+
+    movimiento = {
+        "id": generar_id_movimiento(),
+        "producto_codigo": codigo,
+        "tipo": "ENTRADA",
+        "cantidad":cantidad,
+        "motivo":motivo,
+        "fecha":datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+    movimientos.append(movimiento)
+    print(" ")
+    print(f"Entrada {movimiento['id']} registrada correctamente. Stock actual: {calcular_stock(codigo)}")
+
+def registrar_salida_manual():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    codigo = input("Ingrese el codigo del producto: ").strip().upper()
+    encontrado = False
+    for producto in productos:
+        if producto['codigo'] == codigo:
+            encontrado = True
+            if producto['activo'] == False:
+                print("El producto esta inactivo, no se puede registrar salida")
+                return
+    if encontrado == False:
+        print("No existe un producto con ese codigo")
+        return
+
+    try:
+        cantidad = int(input("Ingrese la cantidad de salida: "))
+        if cantidad <= 0:
+            print("La cantidad debe ser mayor que 0")
+            return
+    except ValueError:
+        print("La cantidad debe ser un numero entero")
+        return
+
+    stock_disponible = calcular_stock(codigo)
+    if cantidad > stock_disponible:
+        print(f"Stock insuficiente. Stock disponible: {stock_disponible}")
+        return
+
+    motivo = input("Ingrese el motivo de la salida: ").strip()
+    if motivo == "":
+        print("El motivo es obligatorio")
+        return
+
+    movimiento = {
+        "id": generar_id_movimiento(),
+        "producto_codigo":codigo,
+        "tipo": "SALIDA",
+        "cantidad":cantidad,
+        "motivo":motivo,
+        "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+    movimientos.append(movimiento)
+    print(" ")
+    print(f"Salida {movimiento['id']} registrada correctamente. Stock actual: {calcular_stock(codigo)}")
+    print(" ")
 
 def main():
     control = True
@@ -584,6 +677,25 @@ def main():
                             consultar_lotes()
                         case 0:
                             break
+            case 3:
+                control4 = True
+                while (control4):
+                    submenuMovimientos()
+                    try:
+                        opc4 = int(input("Seleccione una opcion: "))
+                    except ValueError:
+                        print("Ingrese una opcion valida")
+                        continue
+                    match(opc4):
+                        case 1:
+                            registrar_entrada_manual()
+                            guardar_movimientos()
+                        case 2:
+                            registrar_salida_manual()
+                            guardar_movimientos()
+                        case 0:
+                            break
+                
        
             case 0:
                 print("Ha salido del sistema correctamente")
