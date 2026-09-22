@@ -162,8 +162,8 @@ def registrar_producto():
         "nombre":nombre,
         "categoria":categoria,
         "unidad":unidad,
-        "precio":precio,
-        "stock_minimo":stock_minimo,
+        "precio":precio_numero,
+        "stock_minimo":stock,
         "activo":True,
         "stock_actual":0
     }
@@ -364,15 +364,15 @@ def registrar_lote():
     for producto in productos:
         if codigo_producto == producto['codigo']:
             encontrado = True
+            if producto['activo'] == False:
+                print("El producto esta inactivo, no se puede asignar")
+                return
             for lote in lotes:
                 if codigo_producto == lote['codigo_producto']:
                     print("El producto ya esta asignado a un lote")
                     return
-                elif producto['activo'] == False:
-                    print("El producto esta inactivo, no se puede asignar")
-                    return
     if encontrado == False:
-        print("No existe un producto con ese codigo") 
+        print("No existe un producto con ese codigo")
         return
     try:    
         area_texto = input("Ingrese el area en m2: ")
@@ -404,15 +404,49 @@ def sembrar_lote():
     for lote in lotes:
         if lote['codigo'] == codigo:
             encontrado = True
+            if lote['estado'] == "EN_PRODUCCION":
+                print("El lote ya se encuentra sembrado y en produccion")
+                return
+            if lote['estado'] == "CANCELADO":
+                print("El lote esta desactivado y no se puede sembrar")
+                return
             fecha_siembra = input("Ingrese la fecha de siembra(DD/MM/AAAA): ")
             lote['fecha_siembra'] = fecha_siembra
+            lote['estado'] = "EN_PRODUCCION"
             print("")
             print(f"El lote {lote['codigo']} se sembro correctamente en la fecha {lote['fecha_siembra']}")
             print("")
     if encontrado == False:
         print("No se encontro el lote con ese codigo")
-        
 
+def cosechar_lote():
+    codigo = input("Ingrese el codigo del lote que desea cosechar")
+
+    encontrado = False
+    for lote in lotes:
+        if lote['codigo'] == codigo:
+            encontrado = True
+            if lote['estado'] == "COSECHADO":
+                print("El lote ya se encuentra cosechado y en produccion")
+                return
+            if lote['estado'] == "CANCELADO":
+                print("El lote esta desactivado y no se puede cosechar")
+                return
+            try:
+                cantidad_producida = int(input("Ingrese la cantidad producida: "))
+                if cantidad_producida <= 0:
+                    print("La cantidad producida debe ser mayor que 0")
+                    return
+            except ValueError:
+                print("La cantidad producida debe ser un numero entero")
+                return
+            lote['cantidad_producida'] = cantidad_producida
+            lote['estado'] = "COSECHADO"
+            print("")
+            print(f"El lote {lote['codigo']} se cosecho correctamente con una cantidad de {lote['cantidad_producida']}")
+            print("")
+    if encontrado == False:
+        print("No se encontro el lote con ese codigo")
 
 
 
