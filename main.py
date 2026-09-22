@@ -46,6 +46,15 @@ def submenuLote():
     print("0. Salir")
     print(" ")
 
+def submenuMovimientos():
+    print("============Movimientos de Inventario===========")
+    print(" ")
+    print("1. Registrar entrada manual")
+    print("2. Registrar salida manual")
+    print("3. Consultar movimientos")
+    print("0. Salir")
+    print(" ")
+
 def cargar_productos():
     try:
         with open("data/productos.json", "r") as archivo:
