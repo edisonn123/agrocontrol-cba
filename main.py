@@ -823,6 +823,27 @@ def reporte_inventario():
     print(f"Valor total del inventario (a precio de venta): ${valor_total_inventario}")
     print(" ")
 
+def reporte_ventas():
+    if not ventas:
+        print("No existen ventas registradas")
+        return
+
+    numero_ventas = len(ventas)
+    unidades_vendidas = 0
+    ingresos_totales = 0
+
+    for venta in ventas:
+        ingresos_totales = ingresos_totales + venta['total']
+        for item in venta['items']:
+            unidades_vendidas = unidades_vendidas + item['cantidad']
+
+    print("============REPORTE DE VENTAS===============")
+    print(" ")
+    print(f"Numero de ventas: {numero_ventas}")
+    print(f"Unidades vendidas: {unidades_vendidas}")
+    print(f"Ingresos acumulados: ${ingresos_totales}")
+    print(" ")
+
 
 def main():
     control = True
@@ -923,6 +944,7 @@ def main():
                             break
             case 4:
                 registrar_venta()
+                guardar_ventas()
             case 5:
                 consultar_ventas()
             case 6:
@@ -938,6 +960,11 @@ def main():
                         continue
                     match(opc5):
                         case 1:
+                            reporte_inventario()
+                        case 2:
+                            reporte_ventas()
+                        case 0:
+                            break
        
             case 0:
                 print("Ha salido del sistema correctamente")
