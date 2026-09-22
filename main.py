@@ -760,6 +760,28 @@ def registrar_venta():
     print(f"Venta {venta['id']} registrada correctamente. Total: ${total}")
     print(" ")
 
+
+def mostrar_alertas():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    encontrados = False
+    for producto in productos:
+        if producto['activo'] == True:
+            stock_actual = calcular_stock(producto['codigo'])
+            if stock_actual <= producto['stock_minimo']:
+                if not encontrados:
+                    print(" ")
+                    print(f"| {'Codigo':<10} | {'Nombre':<15} | {'Stock actual':<14} | {'Stock minimo':<14} |")
+                    print("-" * 65)
+                    encontrados = True
+                print(f"| {producto['codigo']:<10} | {producto['nombre']:<15} | {stock_actual:<14} | {producto['stock_minimo']:<14} |")
+    if encontrados == False:
+        print("No hay productos en estado de alerta")
+        print(" ")
+
+
 def main():
     control = True
     while(control):
@@ -859,6 +881,9 @@ def main():
                             break
             case 4:
                 registrar_venta()
+            case 5:
+            case 6:
+                mostrar_alertas()
        
             case 0:
                 print("Ha salido del sistema correctamente")
