@@ -41,7 +41,7 @@ def submenuLote():
     print("1. Registrar Lote")
     print("2. Sembrar Lote")
     print("3. Cosechar Lote")
-    print("4. Desactivar Lote")
+    print("4. Gestionar estado de Lote")
     print("5. Consultar Lotes")
     print("0. Salir")
     print(" ")
@@ -53,6 +53,12 @@ def submenuMovimientos():
     print("2. Registrar salida manual")
     print("3. Consultar movimientos")
     print("0. Salir")
+    print(" ")
+
+def submenuVentas():
+    print("===========Registrar Venta===========")
+    print(" ")
+    print("Agregue productos a la venta. Escriba 'FIN' en el codigo para terminar")
     print(" ")
 
 def cargar_productos():
@@ -181,6 +187,7 @@ def registrar_producto():
 def consultar_productos():
     if not productos:
         print("No existen productos registrados")
+        return
     print(" ")
     print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
     print("-" * 77)
@@ -191,6 +198,7 @@ def consultar_productos():
 def consultar_productos_activos():
     if not productos:
         print("No existen productos registrados")
+        return
 
     encontrados = False
     for producto in productos:
@@ -209,6 +217,7 @@ def consultar_productos_activos():
 def consultar_productos_codigo():
     if not productos:
         print("No existen productos registrados")
+        return
 
     codigo = input("Ingrese el codigo del producto a buscar: ").strip()
     if codigo == "":
@@ -231,6 +240,7 @@ def consultar_productos_codigo():
 def consultar_productos_nombre():
     if not productos:
         print("No existen productos registrados")
+        return
 
     nombre = input("Ingrese el nombre o parte de el, del producto: ").strip().lower()
     if nombre == "":
@@ -719,7 +729,7 @@ def main():
                             cosechar_lote()
                             guardar_lotes()
                         case 4:
-                            desactivar_lote()
+                            gestionar_estado_lote()
                             guardar_lotes()
                         case 5:
                             consultar_lotes()
