@@ -419,34 +419,25 @@ def sembrar_lote():
     if encontrado == False:
         print("No se encontro el lote con ese codigo")
 
-def cosechar_lote():
-    codigo = input("Ingrese el codigo del lote que desea cosechar")
+
+def desactivar_lote():
+    codigo = input("Ingrese el codigo del lote que desea desactivar: ").strip()
 
     encontrado = False
     for lote in lotes:
         if lote['codigo'] == codigo:
             encontrado = True
-            if lote['estado'] == "COSECHADO":
-                print("El lote ya se encuentra cosechado y en produccion")
-                return
             if lote['estado'] == "CANCELADO":
-                print("El lote esta desactivado y no se puede cosechar")
+                print("El lote ya se encuentra desactivado")
                 return
-            try:
-                cantidad_producida = int(input("Ingrese la cantidad producida: "))
-                if cantidad_producida <= 0:
-                    print("La cantidad producida debe ser mayor que 0")
-                    return
-            except ValueError:
-                print("La cantidad producida debe ser un numero entero")
-                return
-            lote['cantidad_producida'] = cantidad_producida
-            lote['estado'] = "COSECHADO"
+            lote['estado'] = "CANCELADO"
             print("")
-            print(f"El lote {lote['codigo']} se cosecho correctamente con una cantidad de {lote['cantidad_producida']}")
+            print(f"El lote {lote['codigo']} fue desactivado correctamente")
             print("")
     if encontrado == False:
         print("No se encontro el lote con ese codigo")
+
+
 
 
 
@@ -502,21 +493,23 @@ def main():
                         case 0:
                             break 
             case 2:
-                submenuLote()
-                try:
-                    opc3 = int(input("Seleccione una opcion: "))
-                except ValueError:
-                    print("Ingrese una opcion valida")
-                    continue
-                match(opc3):
-                    case 1:
-                        registrar_lote()
-                        guardar_lotes()
-                    case 2:
-                        sembrar_lote()
-                        guardar_lotes()
-                    case 0:
-                        break
+                control3 = True
+                while (control3):
+                    submenuLote()
+                    try:
+                        opc3 = int(input("Seleccione una opcion: "))
+                    except ValueError:
+                        print("Ingrese una opcion valida")
+                        continue
+                    match(opc3):
+                        case 1:
+                            registrar_lote()
+                            guardar_lotes()
+                        case 2:
+                            sembrar_lote()
+                            guardar_lotes()
+                        case 0:
+                            break
        
             case 0:
                 print("Ha salido del sistema correctamente")
