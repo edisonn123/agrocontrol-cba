@@ -65,6 +65,7 @@ def submenuReportes():
     print(" ")
     print("1. Reporte de inventario")
     print("2. Reporte de ventas")
+    print("3. Reporte de ranking mas vendidos")
     print("0. Salir")
     print(" ")
 
@@ -844,6 +845,30 @@ def reporte_ventas():
     print(f"Ingresos acumulados: ${ingresos_totales}")
     print(" ")
 
+def reporte_ranking():
+    if not ventas:
+        print("No existen ventas registradas")
+        return
+
+    cantidad_por_producto = {}
+    for venta in ventas:
+        for item in venta['items']:
+            codigo = item['codigo']
+            if codigo in cantidad_por_producto:
+                cantidad_por_producto[codigo] = cantidad_por_producto[codigo] + item['cantidad']
+            else:
+                cantidad_por_producto[codigo] = item['cantidad']
+
+    ranking = sorted(cantidad_por_producto.items(), key=lambda x: x[1], reverse=True)
+    top3 = ranking[:3]
+
+    print(" ")
+    print("Top 3 productos con mayor cantidad vendida:")
+    posicion = 1
+    for codigo, cantidad in top3:
+        print(f"{posicion}. {codigo} - {cantidad} unidades vendidas")
+        posicion = posicion + 1
+    print(" ")
 
 def main():
     control = True
@@ -963,6 +988,8 @@ def main():
                             reporte_inventario()
                         case 2:
                             reporte_ventas()
+                        case 3:
+                            reporte_ranking()
                         case 0:
                             break
        
