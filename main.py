@@ -476,20 +476,45 @@ def cosechar_lote():
         print("No se encontro el lote con ese codigo")
 
 
-def desactivar_lote():
-    codigo = input("Ingrese el codigo del lote que desea desactivar: ").strip()
+def gestionar_estado_lote():
+    codigo = input("Ingrese el codigo del lote que desea gestionar: ").strip()
 
     encontrado = False
     for lote in lotes:
         if lote['codigo'] == codigo:
             encontrado = True
-            if lote['estado'] == "CANCELADO":
-                print("El lote ya se encuentra desactivado")
+            print(f"Lote {lote['codigo']} en estado: {lote['estado']}")
+
+            if lote['estado'] == "COSECHADO":
+                print("Un lote cosechado no puede cambiar de estado")
                 return
-            lote['estado'] = "CANCELADO"
-            print("")
-            print(f"El lote {lote['codigo']} fue desactivado correctamente")
-            print("")
+
+            if lote['estado'] != "CANCELADO":
+                opc = input("Desea cancelar este lote: (si/no): ").strip().lower()
+                if (opc == "si") or (opc == "s"):
+                    lote['estado'] = "CANCELADO"
+                    print(" ")
+                    print(f"Lote {lote['codigo']} cancelado correctamente")
+                    print(" ")
+                elif (opc == "no") or (opc == "n"):
+                    print("Proceso cancelado con exito")
+                else:
+                    print("Ingrese una opcion valida")
+                return
+
+            if lote['estado'] == "CANCELADO":
+                opc = input("Este lote esta cancelado. Desea reactivarlo: (si/no): ").strip().lower()
+                if (opc == "si") or (opc == "s"):
+                    lote['estado'] = "EN_PRODUCCION"
+                    print(" ")
+                    print(f"Lote {lote['codigo']} reactivado y puesto nuevamente en produccion")
+                    print(" ")
+                elif (opc == "no") or (opc == "n"):
+                    print("Proceso cancelado con exito")
+                else:
+                    print("Ingrese una opcion valida")
+                return
+
     if encontrado == False:
         print("No se encontro el lote con ese codigo")
 
