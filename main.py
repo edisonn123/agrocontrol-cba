@@ -437,6 +437,17 @@ def desactivar_lote():
     if encontrado == False:
         print("No se encontro el lote con ese codigo")
 
+def consultar_lotes():
+    if not lotes:
+        print("No existen lotes registrados")
+        return
+
+    print(" ")
+    print(f"| {'Codigo':<10} | {'Producto':<10} | {'Fecha siembra':<15} | {'Area m2':<10} | {'Cant. producida':<16} | {'Estado':<15} |")
+    print("-" * 90)
+    for lote in lotes:
+        print(f"| {lote['codigo']:<10} | {lote['codigo_producto']:<10} | {lote['fecha_siembra']:<15} | {lote['area_m2']:<10} | {lote['cantidad_producida']:<16} | {lote['estado']:<15} |")
+    print(" ")
 
 
 
