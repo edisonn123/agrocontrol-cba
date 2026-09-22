@@ -496,6 +496,15 @@ def consultar_lotes():
     print(" ")
 
 
+def calcular_stock(codigo_producto):
+    stock = 0
+    for movimiento in movimientos:
+        if movimiento['producto_codigo'] == codigo_producto:
+            if movimiento['tipo'] == "ENTRADA":
+                stock = stock + movimiento['cantidad']
+            elif movimiento ['tipo'] == "SALIDA":
+                stock = stock - movimiento['cantidad']
+    return stock
 
 
 def main():
