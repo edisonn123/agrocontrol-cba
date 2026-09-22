@@ -2,3 +2,8 @@ productos.json
 lotes.json
 movimientos.json
 ventas.json
+__pycache__/
+*pyc
+.venv/
+venv/
+.env
