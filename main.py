@@ -11,7 +11,6 @@ def menu():
     print("5. Consultar ventas")
     print("6. Alertas de stock")
     print("7. Reportes")
-    print("8. Guardar datos")
     print("0. Salir")
     print(" ")
 
@@ -658,6 +657,109 @@ def consultar_movimientos():
         print(f"| {movimiento['id']:<8} | {movimiento['producto_codigo']:<10} | {movimiento['tipo']:<10} | {movimiento['cantidad']:<10} | {movimiento['motivo']:<25} | {movimiento['fecha']:<18} |")
     print(" ")
 
+def generar_id_venta():
+    numero = len(ventas) + 1
+    return f"V{numero:04d}"
+
+def registrar_venta():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    submenuVentas()
+    items = []
+
+    print("======PRODUCTOS======")
+    encontrados = False
+    for producto in productos:
+        if producto['activo'] == True:
+            if not encontrados:
+                print(" ")
+                print(f"| {"Codigo":<12} | {"Nombre":<12} | {"Categoria":<12} | {"Unidad":<12} |  {"Precio":<12} | {"Min_stock":<12} | {"Activo":<12} |")
+                print("-" * 77)
+                encontrados = True
+    
+            print(f"| {producto['codigo']:<12} | {producto['nombre']:<12} | {producto['categoria']:<12} | {producto['unidad']:<12} | ${producto['precio']:<12} | {producto['stock_minimo']:<12} | {producto['activo']:<12} |")
+            print(" ")
+
+    while True:
+        codigo = input("Codigo del producto (o FIN para terminar): ").strip().upper()
+        if codigo == "FIN":
+            break
+
+        encontrado = None
+        for producto in productos:
+            if producto['codigo'] == codigo:
+                encontrado = producto
+                break
+
+        if encontrado is None:
+            print("No existe un producto con ese codigo")
+            continue
+
+        if encontrado['activo'] == False:
+            print("El producto esta inactivo, no se puede vender")
+            continue
+
+        try:
+            cantidad = int(input("Cantidad a vender: "))
+            if cantidad <= 0:
+                print("La cantidad debe ser mayor que 0")
+                continue
+        except ValueError:
+            print("La cantidad debe ser un numero entero")
+            continue
+
+        ya_agregado_en_esta_venta = 0
+        for item in items:
+            if item['codigo'] == codigo:
+                ya_agregado_en_esta_venta = ya_agregado_en_esta_venta + item['cantidad']
+
+        stock_disponible = calcular_stock(codigo) - ya_agregado_en_esta_venta
+        if cantidad > stock_disponible:
+            print(f"Stock insuficiente. Disponible: {stock_disponible}")
+            continue
+
+        item = {
+            "codigo": codigo,
+            "cantidad": cantidad,
+            "precio_unitario": encontrado['precio']
+        }
+        items.append(item)
+        print(f"Agregado: {cantidad} x {encontrado['nombre']}")
+
+    if not items:
+        print("La venta debe contener al menos un item valido. Venta cancelada")
+        return
+
+    total = 0
+    for item in items:
+        total = total + (item['cantidad'] * item['precio_unitario'])
+
+    venta = {
+        "id": generar_id_venta(),
+        "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "items": items,
+        "total": total
+    }
+    ventas.append(venta)
+
+    for item in items:
+        movimiento = {
+            "id": generar_id_movimiento(),
+            "producto_codigo": item['codigo'],
+            "tipo": "SALIDA",
+            "cantidad": item['cantidad'],
+            "motivo": f"Venta {venta['id']}",
+            "fecha": venta['fecha']
+        }
+        movimientos.append(movimiento)
+    guardar_movimientos()
+
+    print(" ")
+    print(f"Venta {venta['id']} registrada correctamente. Total: ${total}")
+    print(" ")
+
 def main():
     control = True
     while(control):
@@ -755,7 +857,8 @@ def main():
                             consultar_movimientos()
                         case 0:
                             break
-                
+            case 4:
+                registrar_venta()
        
             case 0:
                 print("Ha salido del sistema correctamente")
