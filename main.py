@@ -455,8 +455,20 @@ def cosechar_lote():
             lote['cantidad_producida'] = cantidad_producida
             lote['estado'] = "COSECHADO"
 
+            movimiento = {
+                "id": generar_id_movimiento(),
+                "producto_codigo": lote['codigo_producto'],
+                "tipo": "ENTRADA",
+                "cantidad": cantidad_producida,
+                "motivo": f"Cosecha lote {lote['codigo']}",
+                "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            }
+            movimientos.append(movimiento)
+            guardar_movimientos()
+
             print("")
             print(f"El lote {lote['codigo']} se cosecho correctamente con una cantidad de {lote['cantidad_producida']}")
+            print(f"Se genero automaticamente la entrada de inventario {movimiento['id']}")
             print("")
             return
 
