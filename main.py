@@ -60,6 +60,14 @@ def submenuVentas():
     print("Agregue productos a la venta. Escriba 'FIN' en el codigo para terminar")
     print(" ")
 
+def submenuReportes():
+    print("===========Reportes=============")
+    print(" ")
+    print("1. Reporte de inventario")
+    print("2. Reporte de ventas")
+    print("0. Salir")
+    print(" ")
+
 def cargar_productos():
     try:
         with open("data/productos.json", "r") as archivo:
@@ -760,6 +768,18 @@ def registrar_venta():
     print(f"Venta {venta['id']} registrada correctamente. Total: ${total}")
     print(" ")
 
+def consultar_ventas():
+    if not ventas:
+        print("No existen ventas registradas")
+        return
+
+    print(" ")
+    for venta in ventas:
+        print(f"Venta {venta['id']} | Fecha: {venta['fecha']} | Total: ${venta['total']}")
+        for item in venta['items']:
+            print(f"    - {item['codigo']}: {item['cantidad']} x ${item['precio_unitario']}")
+        print(" ")
+
 
 def mostrar_alertas():
     if not productos:
@@ -772,11 +792,14 @@ def mostrar_alertas():
             stock_actual = calcular_stock(producto['codigo'])
             if stock_actual <= producto['stock_minimo']:
                 if not encontrados:
+                    print("=======================PRODUCTOS EN ALERTA DE STOCK BAJO=======================")
                     print(" ")
                     print(f"| {'Codigo':<10} | {'Nombre':<15} | {'Stock actual':<14} | {'Stock minimo':<14} |")
                     print("-" * 65)
                     encontrados = True
                 print(f"| {producto['codigo']:<10} | {producto['nombre']:<15} | {stock_actual:<14} | {producto['stock_minimo']:<14} |")
+                print(" ")
+
     if encontrados == False:
         print("No hay productos en estado de alerta")
         print(" ")
@@ -882,8 +905,20 @@ def main():
             case 4:
                 registrar_venta()
             case 5:
+                consultar_ventas()
             case 6:
                 mostrar_alertas()
+            case 7:
+                control5 = True
+                while (control5):
+                    submenuReportes()
+                    try:
+                        opc5 = int(input("Seleccione una opcion: "))
+                    except ValueError:
+                        print("Ingrese una opcion valida")
+                        continue
+                    match(opc5):
+                        case 1:
        
             case 0:
                 print("Ha salido del sistema correctamente")
