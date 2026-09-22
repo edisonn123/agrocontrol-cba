@@ -418,8 +418,7 @@ def sembrar_lote():
             if lote['estado'] == "CANCELADO":
                 print("El lote esta desactivado y no se puede sembrar")
                 return
-            fecha_siembra = input("Ingrese la fecha de siembra(DD/MM/AAAA): ")
-            lote['fecha_siembra'] = fecha_siembra
+            lote['fecha_siembra'] = datetime.datetime.now().strftime("%d-%m-%Y")
             lote['estado'] = "EN_PRODUCCION"
             print("")
             print(f"El lote {lote['codigo']} se sembro correctamente en la fecha {lote['fecha_siembra']}")
@@ -600,6 +599,18 @@ def registrar_salida_manual():
     print(f"Salida {movimiento['id']} registrada correctamente. Stock actual: {calcular_stock(codigo)}")
     print(" ")
 
+def consultar_movimientos():
+    if not movimientos:
+        print("No existen movimientos registrados")
+        return
+    
+    print(" ")
+    print(f"| {'ID':<8} | {'Codigo':<10} | {'Tipo':<10} | {'Cantidad':<10} | {'Motivo':<25} | {'Fecha':<18} |")
+    print("-" * 95)
+    for movimiento in movimientos:
+        print(f"| {movimiento['id']:<8} | {movimiento['producto_codigo']:<10} | {movimiento['tipo']:<10} | {movimiento['cantidad']:<10} | {movimiento['motivo']:<25} | {movimiento['fecha']:<18} |")
+    print(" ")
+
 def main():
     control = True
     while(control):
@@ -693,6 +704,8 @@ def main():
                         case 2:
                             registrar_salida_manual()
                             guardar_movimientos()
+                        case 3:
+                            consultar_movimientos()
                         case 0:
                             break
                 
