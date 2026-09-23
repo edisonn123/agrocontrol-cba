@@ -2,6 +2,11 @@ productos.json
 lotes.json
 movimientos.json
 ventas.json
+reporte_inventario.csv
+productos_backup.json
+lotes_backup.json
+movimientos_backup.json
+ventas_backup.json
 __pycache__/
 *pyc
 .venv/

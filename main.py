@@ -1,5 +1,8 @@
 import json
 import datetime
+import csv
+import shutil
+import os
 
 def menu():
     print("===========AGRO CONTROL CBA=============")
@@ -11,6 +14,7 @@ def menu():
     print("5. Consultar ventas")
     print("6. Alertas de stock")
     print("7. Reportes")
+    print("8. Registrar devolucion de venta")
     print("0. Salir")
     print(" ")
 
@@ -66,8 +70,17 @@ def submenuReportes():
     print("1. Reporte de inventario")
     print("2. Reporte de ventas")
     print("3. Reporte de ranking mas vendidos")
+    print("4. Reporte de utilidad")
+    print("5. Exportar inventario a CSV")
     print("0. Salir")
     print(" ")
+
+def hacer_backup(nombre_archivo):
+    try:
+        if os.path.exists(nombre_archivo):
+            shutil.copy(nombre_archivo, nombre_archivo.replace(".json", "_backup.json"))
+    except Exception as error:
+        print(f"No se pudo generar la copia de seguridad de {nombre_archivo}: {error}")
 
 def cargar_productos():
     try:
@@ -102,18 +115,22 @@ def cargar_ventas():
         return []
 
 def guardar_productos():
+    hacer_backup("data/productos.json")
     with open("data/productos.json", "w") as archivo:
         json.dump (productos, archivo, indent=4)
 
 def guardar_lotes():
+    hacer_backup("data/lotes.json")
     with open("data/lotes.json", "w") as archivo:
         json.dump (lotes, archivo, indent=4)
 
 def guardar_movimientos():
+    hacer_backup("data/movimientos.json")
     with open("data/movimientos.json", "w") as archivo:
         json.dump (movimientos, archivo, indent=4)
 
 def guardar_ventas():
+    hacer_backup("data/ventas.json")
     with open("data/ventas.json", "w") as archivo:
         json.dump (ventas, archivo, indent=4)
 
@@ -121,6 +138,22 @@ productos = cargar_productos()
 lotes = cargar_lotes()
 movimientos = cargar_movimientos()
 ventas = cargar_ventas()
+
+def iniciar_sesion():
+    print("============ INICIO DE SESION ==================")
+    print("1. OPERADOR")
+    print("2. INSRUCTOR")
+    while True:
+        try:
+            opcion = int(input("Seleccione su rol: "))
+            if opcion == 1:
+                return "OPERADOR"
+            elif opcion == 2:
+                return "INSTRUCTOR"
+            else:
+                print("Opcion Invalida")
+        except ValueError:
+            print("Ingrese un numero valido")
 
 def registrar_producto():
     codigo = input("Ingrese el codigo del producto: ").strip().upper()
@@ -180,6 +213,19 @@ def registrar_producto():
         print("El stock debe ser un numero entero")
         return
 
+    costo_unitario = input("Ingrese el costo unitario del producto: ").strip()
+    if costo_unitario == "":
+        print("El costo unitario no puede quedar vacio")
+        return
+    try:
+        costo_numero = int(costo_unitario)
+        if costo_numero < 0:
+            print("El costo unitario no puede ser negativo")
+            return
+    except ValueError:
+        print("El costo unitario debe ser un numero valido")
+        return
+
     producto = {
         "codigo":codigo,
         "nombre":nombre,
@@ -188,6 +234,7 @@ def registrar_producto():
         "precio":precio_numero,
         "stock_minimo":stock,
         "activo":True,
+        "costo_unitario": costo_numero
     }
     productos.append(producto)
     print(f"Producto {codigo} registrado correctamente")
@@ -326,6 +373,17 @@ def actualizar_producto():
     print(" ")
     print("Producto actualizado correctamente")
     print(" ")
+
+    nuevo_costo = input(f"Costo unitario [{resultado['costo_unitario']}]: ").strip()
+    if nuevo_costo != "":
+        try:
+            costo_numero = int(nuevo_costo)
+            if costo_numero < 0:
+                print("El costo no puede ser negativo, no se actualizo")
+            else:
+                resultado["costo_unitario"] = costo_numero
+        except ValueError:
+            print("Costo invalido, no se actualizo")
 
 def gestionar_estado_producto():
     if not productos:
@@ -774,12 +832,26 @@ def consultar_ventas():
         print("No existen ventas registradas")
         return
 
+    print("=========================HISTORIAL DE VENTAS=========================")
     print(" ")
     for venta in ventas:
         print(f"Venta {venta['id']} | Fecha: {venta['fecha']} | Total: ${venta['total']}")
         for item in venta['items']:
             print(f"    - {item['codigo']}: {item['cantidad']} x ${item['precio_unitario']}")
         print(" ")
+
+def consultar_ventas_fecha(fecha_inicio, fecha_fin):
+    encontrados = False
+    for venta in ventas:
+        fecha_venta = venta['fecha'][:10]
+        if fecha_inicio <= fecha_venta <= fecha_fin:
+            encontrados = True
+            print(f"Venta {venta['id']} | Fecha: {venta['fecha']} | Total: ${venta['total']}")
+            for item in venta['items']:
+                print(f"    - {item['codigo']}: {item['cantidad']} x ${item['precio_unitario']}")
+            print(" ")
+    if not encontrados:
+        print("No hay ventas en ese rango de fechas")
 
 
 def mostrar_alertas():
@@ -870,7 +942,98 @@ def reporte_ranking():
         posicion = posicion + 1
     print(" ")
 
+def reporte_utilidad():
+    if not ventas:
+        print("No existen ventas registradas")
+        return
+
+    utilidad_total = 0
+    for venta in ventas:
+        for item in venta['items']:
+            costo_producto = 0
+            for producto in productos:
+                if producto['codigo'] == item['codigo']:
+                    costo_producto = producto['costo_unitario']
+            utilidad_item = (item['precio_unitario'] - costo_producto) * item['cantidad']
+            utilidad_total = utilidad_total + utilidad_item
+
+    print(" ")
+    print(f"La utilidad estimada acumulada de todas las ventas es de: ${utilidad_total}")
+    print(" ")
+
+def registrar_devolucion():
+    if not ventas:
+        print("No existen ventas registradas")
+        return
+
+    id_venta = input("Ingrese el ID de la venta: ").strip().upper()
+
+    venta_encontrada = None
+    for venta in ventas:
+        if venta['id'] == id_venta:
+            venta_encontrada = venta
+            break
+
+    if venta_encontrada is None:
+        print("No existe una venta con ese ID")
+        return
+
+    codigo = input("Ingrese el codigo del producto a devolver: ").strip().upper()
+
+    item_encontrado = None
+    for item in venta_encontrada['items']:
+        if item['codigo'] == codigo:
+            item_encontrado = item
+            break
+
+    if item_encontrado is None:
+        print("Ese producto no esta en esa venta")
+        return
+
+    try:
+        cantidad = int(input(f"Cantidad a devolver (maximo {item_encontrado['cantidad']}): "))
+        if cantidad <= 0 or cantidad > item_encontrado['cantidad']:
+            print("Cantidad invalida")
+            return
+    except ValueError:
+        print("La cantidad debe ser un numero entero")
+        return
+
+    movimiento = {
+        "id": generar_id_movimiento(),
+        "producto_codigo": codigo,
+        "tipo": "ENTRADA",
+        "cantidad": cantidad,
+        "motivo": f"Devolucion venta {id_venta}",
+        "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+    movimientos.append(movimiento)
+    guardar_movimientos()
+
+    print(" ")
+    print(f"Devolucion registrada correctamente. Se genero la entrada {movimiento['id']}")
+    print(" ")
+
+def exportar_inventario_csv():
+    if not productos:
+        print("No existen productos registrados")
+        return
+
+    with open("data/reporte_inventario.csv", "w", newline="") as archivo:
+        escritor = csv.writer(archivo)
+        escritor.writerow(["Codigo", "Nombre", "Categoria", "Stock", "Precio", "Valor total"])
+        for producto in productos:
+            if producto['activo'] == True:
+                stock_actual = calcular_stock(producto['codigo'])
+                valor = stock_actual * producto['precio']
+                escritor.writerow([producto['codigo'], producto['nombre'], producto['categoria'], stock_actual, producto['precio'], valor])
+
+    print(" ")
+    print("Reporte exportado correctamente en data/reporte_inventario.csv")
+    print(" ")
+
 def main():
+    rol = iniciar_sesion()
     control = True
     while(control):
         menu()
@@ -971,10 +1134,22 @@ def main():
                 registrar_venta()
                 guardar_ventas()
             case 5:
-                consultar_ventas()
+                filtro = input("Filtrar por rango de fechas? (s/n): ").strip().lower()
+                if filtro =="s" or filtro == "si":
+                    fecha_inicio = input("Fecha de inicio (YYYY-MM-DD): ").strip()
+                    fecha_fin = input("Fecha fin (YYYY-MM-DD): ").strip()
+                    consultar_ventas_fecha(fecha_inicio, fecha_fin)
+                else:
+                    consultar_ventas()
+                    
             case 6:
                 mostrar_alertas()
             case 7:
+                if rol != "INSTRUCTOR":
+                    print("====================================================================")
+                    print("= ACCESO RESTRINGIDO: SOLO EL ROL DE INSTRUCTOR PUEDE VER REPORTES =")
+                    print("====================================================================")
+                    continue
                 control5 = True
                 while (control5):
                     submenuReportes()
@@ -990,8 +1165,18 @@ def main():
                             reporte_ventas()
                         case 3:
                             reporte_ranking()
+                        case 4:
+                            reporte_utilidad()
+                        case 5:
+                            exportar_inventario_csv()
                         case 0:
                             break
+            case 8:
+                if rol != "INSTRUCTOR":
+                    print("=============================================================================")
+                    print("= ACCESO RESTRINGIDO: SOLO EL TOL DE INSTRUCTOR PUEDE REALIZAR DEVOLUCIONES =")
+                    print("=============================================================================")
+                registrar_devolucion()
        
             case 0:
                 print("Ha salido del sistema correctamente")
